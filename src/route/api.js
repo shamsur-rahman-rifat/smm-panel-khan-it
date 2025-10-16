@@ -36,7 +36,7 @@ router.get('/viewTransactionHistory', Authentication , viewTransactionHistory);
 // Order Routes
 
 router.get('/getServicesFromAPI' , Authentication, getServicesFromAPI);
-router.get('/placeNewOrder' , Authentication, placeNewOrder);
+router.post('/placeNewOrder' , Authentication, placeNewOrder);
 router.post('/placeMassOrder' , Authentication, placeMassOrder);
 router.get('/getUserOrders' , Authentication, getUserOrders);
 router.post('/getOrderDetails/:orderId' , Authentication, getOrderDetails);
