@@ -3,14 +3,26 @@ import User from '../model/User.js';
 import Transaction from '../model/Transaction.js';
 import apiService from '../utility/apiService.js';
 
-// Get all services directly from the third-party API (instead of using the database)
+// Get all services directly from the third-party API
 export async function getServicesFromAPI(req, res) {
   try {
-    const profitPercentage = parseFloat(req.body.profit);
-    // Validate profit range
-    if (isNaN(profitPercentage) || profitPercentage < 0 ) {
+    // Extract the profit percentage from the query parameters
+    const profitPercentage = parseFloat(req.query.profit);
+    
+    // Validate the profit percentage (ensure it’s a positive number)
+    if (isNaN(profitPercentage) || profitPercentage < 0) {
       return res.status(400).json({ message: 'Invalid profit percentage. Must be a positive number.' });
     }
+
+    // Pagination parameters from the query string
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page if not provided
+
+    // Validate page and limit (ensure they are positive integers)
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({ message: 'Page and limit must be greater than zero.' });
+    }
+
     // Fetch services from the third-party API
     const services = await apiService.getServices(profitPercentage);
 
@@ -18,7 +30,28 @@ export async function getServicesFromAPI(req, res) {
       return res.status(404).json({ message: 'No services found' });
     }
 
-    res.json({ success: true, services });
+    // Calculate the starting index for the current page
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    // Slice the array based on the pagination values
+    const paginatedServices = services.slice(startIndex, endIndex);
+
+    // Metadata for pagination (total pages, current page, etc.)
+    const totalServices = services.length;
+    const totalPages = Math.ceil(totalServices / limit);
+
+    // Send response with paginated data and pagination metadata
+    res.json({
+      success: true,
+      services: paginatedServices,
+      pagination: {
+        totalServices,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch services from API', error: error.message });
   }
