@@ -47,7 +47,7 @@ router.post('/cancelOrders' , Authentication, checkRole('admin'), cancelOrders);
 router.post('/createTicket', Authentication, createTicket);
 router.get('/getMyTickets', Authentication, getMyTickets);
 router.get('/getAllTickets', Authentication, checkRole('admin'), getAllTickets);
-router.post('/replyToTicket/:ticketId', Authentication, replyToTicket);
+router.post('/replyToTicket/:ticketId', Authentication , checkRole('user', 'admin'), replyToTicket);
 router.post('/updateTicketStatus/:ticketId', Authentication, checkRole('admin'), updateTicketStatus);
 
 //Dashboard Routes

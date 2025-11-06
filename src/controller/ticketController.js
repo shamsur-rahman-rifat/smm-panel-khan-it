@@ -48,7 +48,7 @@ export const replyToTicket = async (req, res) => {
     const { ticketId } = req.params;
     const { message } = req.body;
 
-    const sender = req.user.role === 'admin' ? 'admin' : 'user';
+    const sender = req.userRole === 'admin' ? 'admin' : 'user';
 
     const ticket = await Ticket.findById(ticketId);
     if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
