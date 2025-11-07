@@ -52,7 +52,7 @@ router.post('/updateTicketStatus/:ticketId', Authentication, checkRole('admin'),
 
 //Dashboard Routes
 
-router.get('/getDashboardData', Authentication , getDashboardData);
+router.get('/getDashboardData', Authentication , checkRole('admin'), getDashboardData);
 
 //Payment Routes
 
