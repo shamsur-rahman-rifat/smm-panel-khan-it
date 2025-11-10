@@ -44,15 +44,15 @@ router.post('/getOrderDetails/:orderId' , Authentication, getOrderDetails);
 
 router.post('/createTicket', Authentication, createTicket);
 router.get('/getMyTickets', Authentication, getMyTickets);
-router.post('/replyToTicket/:ticketId', Authentication , checkRole('user', 'admin'), replyToTicket);
+router.post('/replyToTicket/:ticketId', Authentication , checkRole('user', 'admin', 'agent'), replyToTicket);
 
 // Admin Dashboard Routes
 
 router.get('/getDashboardData', Authentication , getDashboardData);
 router.delete('/profileDelete/:id',Authentication , checkRole('admin') , profileDelete);
-router.post('/cancelOrders' , Authentication, checkRole('admin'), cancelOrders);
-router.get('/getAllTickets', Authentication, checkRole('admin'), getAllTickets);
-router.post('/updateTicketStatus/:ticketId', Authentication, checkRole('admin'), updateTicketStatus);
+router.post('/cancelOrders' , Authentication, checkRole( 'admin', 'agent'), cancelOrders);
+router.get('/getAllTickets', Authentication, checkRole( 'admin', 'agent'), getAllTickets);
+router.post('/updateTicketStatus/:ticketId', Authentication, checkRole( 'admin', 'agent'), updateTicketStatus);
 router.get('/viewUserList', Authentication , checkRole('admin') , viewUserList);
 router.get('/viewOrderList', Authentication , checkRole('admin') , viewOrderList);
 

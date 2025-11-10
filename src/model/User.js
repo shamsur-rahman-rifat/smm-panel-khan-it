@@ -7,7 +7,7 @@ const userSchema = new Schema({
   password: String,
   balance: { type: Number, default: 0 },
   totalSpent: { type: Number, default: 0 },
-  role: { type:String, enum: ['admin', 'user'], default:'user'}  
+  role: { type:String, enum: ['admin', 'user','agent'], default:'user'}  
 },{timestamps: true, versionKey: false});
 
 export default model('users', userSchema);
