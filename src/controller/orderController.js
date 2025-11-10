@@ -3,6 +3,16 @@ import User from '../model/User.js';
 import Transaction from '../model/Transaction.js';
 import apiService from '../utility/apiService.js';
 
+export const viewOrderList = async (req, res) => {
+  try {
+    const result = await Order.find();
+    res.json({ status: 'Success', data: result });
+  } catch (error) {
+    res.json({ status: 'Failed', message: error });
+  }
+};
+
+
 // Get all services directly from the third-party API
 export async function getServicesFromAPI(req, res) {
   try {

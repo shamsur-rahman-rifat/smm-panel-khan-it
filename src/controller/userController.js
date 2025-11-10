@@ -123,6 +123,15 @@ export const profileDetails = async (req, res) => {
   }
 };
 
+export const viewUserList = async (req, res) => {
+  try {
+    const result = await userModel.find();
+    res.json({ status: 'Success', data: result });
+  } catch (error) {
+    res.json({ status: 'Failed', message: error });
+  }
+};
+
 export const viewTransactionHistory = async (req, res) => {
   try {
     const email = req.headers['email'];
@@ -137,3 +146,4 @@ export const viewTransactionHistory = async (req, res) => {
     res.json({ status: 'Failed', message: error.message });
   }
 };
+
