@@ -361,16 +361,15 @@ export async function getOrderDetails(req, res) {
 export async function cancelOrders(req, res) {
   try {
     const { orderIds } = req.body;  // Array of order IDs to be cancelled
-    const email = req.headers['email'];
 
     if (!Array.isArray(orderIds) || orderIds.length === 0 || orderIds.length > 100) {
       return res.status(400).json({ message: 'Provide a valid list of order IDs (within 1 to 100)' });
     }
 
     // Get the orders by order IDs and validate if they are from the current user
-    const orders = await Order.find({ _id: { $in: orderIds }, email });
+    const orders = await Order.find({ _id: { $in: orderIds }});
     if (orders.length !== orderIds.length) {
-      return res.status(404).json({ message: 'Some orders not found or do not belong to the user.' });
+      return res.status(404).json({ message: 'Some orders not found.' });
     }
 
     // Prepare the list of orders that need to be cancelled (only those with a valid apiOrderId)
