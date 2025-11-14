@@ -10,6 +10,8 @@ const orderSchema  = new Schema({
   actualCharge: { type: Number, required: true }, // Amount paid to third-party
   profit: { type: Number, required: true }, // Admin profit
   apiOrderId: String,
+  refill: { type: Boolean, required: true },
+  cancel: { type: Boolean, required: true },
   status: { 
     type: String, 
     enum: ['Pending', 'Processing', 'Completed', 'Partial', 'Canceled'],

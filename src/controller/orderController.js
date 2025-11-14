@@ -12,7 +12,6 @@ export const viewOrderList = async (req, res) => {
   }
 };
 
-
 // Get all services directly from the third-party API
 export async function getServicesFromAPI(req, res) {
   try {
@@ -140,6 +139,8 @@ const profit = parseFloat((charge - actualCharge).toFixed(4));
       charge: parseFloat(charge),
       actualCharge: parseFloat(actualCharge),
       profit: parseFloat(profit),
+      refill: service.refill,
+      cancel: service.cancel,
       apiOrderId: apiResponse.order,
       status: 'Processing'
     });
@@ -169,6 +170,8 @@ const profit = parseFloat((charge - actualCharge).toFixed(4));
         quantity: order.quantity,
         charge: order.charge,
         status: order.status,
+        refill: order.refill,
+        cancel: order.cancel,        
         apiOrderId: order.apiOrderId
       },
       balance: user.balance
@@ -238,6 +241,8 @@ export async function placeMassOrder(req, res) {
             charge: parseFloat(charge),
             actualCharge: parseFloat(actualCharge),
             profit: parseFloat(profit),
+            refill: service.refill,
+            cancel: service.cancel,
             apiOrderId: apiResponse.order,
             status: 'Processing'
           });
