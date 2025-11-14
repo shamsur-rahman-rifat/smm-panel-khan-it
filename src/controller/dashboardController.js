@@ -37,7 +37,7 @@ export async function getDashboardData(req, res) {
       const totalSpentFromOrders = totalSpentAgg[0]?.totalSpent || 0;
 
       dashboardData.apiBalance = parseFloat(apiBalance.balance || 0); // API balance
-      dashboardData.totalSpentFromOrders = parseFloat(totalSpentFromOrders.toFixed()); // Total spent from orders
+      dashboardData.totalSpentFromOrders = parseFloat(totalSpentFromOrders.toFixed(4)); // Total spent from orders
       dashboardData.totalUsers = totalUsers;
 
       // Aggregate total profit from orders
@@ -50,7 +50,7 @@ export async function getDashboardData(req, res) {
         },
       ]);
       const totalProfit = totalProfitAgg[0]?.totalProfit || 0;
-      dashboardData.totalProfit = parseFloat(totalProfit.toFixed());
+      dashboardData.totalProfit = parseFloat(totalProfit.toFixed(4));
     }
 
     return res.json({
