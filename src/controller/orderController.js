@@ -100,9 +100,9 @@ if (isNaN(userRate) || isNaN(baseRate) || isNaN(qty)) {
     }
 
     // Calculate charges (Make sure we parse numbers correctly)
-const charge = parseFloat((userRate * qty / 1000).toFixed(4));
-const actualCharge = parseFloat((baseRate * qty / 1000).toFixed(4));
-const profit = parseFloat((charge - actualCharge).toFixed(4));
+const charge = parseFloat((userRate * qty / 1000).toFixed());
+const actualCharge = parseFloat((baseRate * qty / 1000).toFixed());
+const profit = parseFloat((charge - actualCharge).toFixed());
 
     // Validate that charge and profit are valid numbers
     if (isNaN(charge) || isNaN(actualCharge) || isNaN(profit)) {
@@ -221,9 +221,9 @@ export async function placeMassOrder(req, res) {
           continue;
         }
 
-        const charge = (service.userRate * orderData.quantity / 1000).toFixed(4);
-        const actualCharge = (service.rate * orderData.quantity / 1000).toFixed(4);
-        const profit = (charge - actualCharge).toFixed(4);
+        const charge = (service.userRate * orderData.quantity / 1000).toFixed();
+        const actualCharge = (service.rate * orderData.quantity / 1000).toFixed();
+        const profit = (charge - actualCharge).toFixed();
 
         const apiResponse = await apiService.placeOrder(
           orderData.serviceId, 
