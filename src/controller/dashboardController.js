@@ -2,6 +2,7 @@
 
 import User from '../model/User.js';
 import Order from '../model/Order.js';
+import ApiService from '../utility/apiService.js';
 
 export async function getDashboardData(req, res) {
   try {
@@ -18,10 +19,28 @@ export async function getDashboardData(req, res) {
       totalSpent: user.totalSpent,
     };
 
-    // If admin, add extra data
+    // If admin, fetch the original balance from the API and total spent from the Order table
     if (user.role === 'admin') {
+      // Get the balance from the third-party API
+      const apiBalance = await ApiService.getBalance(); // API service call to get balance
       const totalUsers = await User.countDocuments({ role: 'user' });
 
+      // Aggregate total spent from the Order model (sum of 'charge' for all users)
+      const totalSpentAgg = await Order.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalSpent: { $sum: '$charge' },
+          },
+        },
+      ]);
+      const totalSpentFromOrders = totalSpentAgg[0]?.totalSpent || 0;
+
+      dashboardData.apiBalance = parseFloat(apiBalance.balance || 0); // API balance
+      dashboardData.totalSpentFromOrders = parseFloat(totalSpentFromOrders.toFixed()); // Total spent from orders
+      dashboardData.totalUsers = totalUsers;
+
+      // Aggregate total profit from orders
       const totalProfitAgg = await Order.aggregate([
         {
           $group: {
@@ -30,11 +49,8 @@ export async function getDashboardData(req, res) {
           },
         },
       ]);
-
       const totalProfit = totalProfitAgg[0]?.totalProfit || 0;
-
-      dashboardData.totalUsers = totalUsers;
-      dashboardData.totalProfit = parseFloat(totalProfit.toFixed(4));
+      dashboardData.totalProfit = parseFloat(totalProfit.toFixed());
     }
 
     return res.json({
