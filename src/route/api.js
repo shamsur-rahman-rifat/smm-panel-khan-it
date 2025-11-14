@@ -38,6 +38,7 @@ router.get('/getServicesFromAPI' , Authentication, getServicesFromAPI);
 router.post('/placeNewOrder' , Authentication, placeNewOrder);
 router.post('/placeMassOrder' , Authentication, placeMassOrder);
 router.get('/getUserOrders' , Authentication, getUserOrders);
+router.post('/cancelOrders' , Authentication, cancelOrders);
 router.post('/getOrderDetails/:orderId' , Authentication, getOrderDetails);
 
 // Ticketing Routes
@@ -50,7 +51,6 @@ router.post('/replyToTicket/:ticketId', Authentication , checkRole('user', 'admi
 
 router.get('/getDashboardData', Authentication , getDashboardData);
 router.delete('/profileDelete/:id',Authentication , checkRole('admin') , profileDelete);
-router.post('/cancelOrders' , Authentication, checkRole( 'admin', 'agent'), cancelOrders);
 router.get('/getAllTickets', Authentication, checkRole( 'admin', 'agent'), getAllTickets);
 router.post('/updateTicketStatus/:ticketId', Authentication, checkRole( 'admin', 'agent'), updateTicketStatus);
 router.get('/viewUserList', Authentication , checkRole('admin') , viewUserList);
