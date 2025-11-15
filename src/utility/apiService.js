@@ -94,6 +94,66 @@ class ApiService {
       throw new Error('Failed to get balance');
     }
   }
+
+  // Create single refill
+  async createRefill(orderId) {
+    try {
+      const response = await axios.post(this.apiUrl, {
+        key: this.apiKey,
+        action: 'refill',
+        order: orderId
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to create refill');
+    }
+  }
+
+  // Create multiple refills
+  async createMultipleRefills(orderIds) {
+    try {
+      const response = await axios.post(this.apiUrl, {
+        key: this.apiKey,
+        action: 'refill',
+        orders: orderIds.join(',') // Comma-separated
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to create multiple refills');
+    }
+  }
+
+  // Get refill status
+  async getRefillStatus(refillId) {
+    try {
+      const response = await axios.post(this.apiUrl, {
+        key: this.apiKey,
+        action: 'refill_status',
+        refill: refillId
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to get refill status');
+    }
+  }
+
+  // Get multiple refill statuses
+  async getMultipleRefillStatus(refillIds) {
+    try {
+      const response = await axios.post(this.apiUrl, {
+        key: this.apiKey,
+        action: 'refill_status',
+        refills: refillIds.join(',')
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to get multiple refill statuses');
+    }
+  }
 }
 
 export default new ApiService();

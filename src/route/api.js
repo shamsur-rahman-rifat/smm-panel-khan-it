@@ -2,15 +2,13 @@ import { Router } from 'express'
 import { registration, login, profileUpdate, profileDelete, profileDetails, viewTransactionHistory, verifyEmail, verifyOTP, passwordReset,viewUserList } from '../controller/userController.js'
 import { getServicesFromAPI, placeNewOrder, placeMassOrder, getUserOrders, getOrderDetails, cancelOrders,viewOrderList } from '../controller/orderController.js'
 import { createTicket, getMyTickets, getAllTickets, replyToTicket, updateTicketStatus } from '../controller/ticketController.js';
+import { requestRefill, requestMultipleRefills, checkRefillStatus, checkMultipleRefillStatuses} from '../controller/refillController.js';
 import { getDashboardData } from '../controller/dashboardController.js'
-
 
 // import { initiatePayment, verifyPayment } from '../controller/paymentController.js';
 
-
 import Authentication from '../middleware/auth.js'
 import checkRole from '../middleware/checkRole.js'
-
 
 const router=Router()
 
@@ -30,7 +28,6 @@ router.get('/passwordReset/:email/:otp/:password', passwordReset);
 router.put('/profileUpdate/:id',Authentication , profileUpdate);
 router.post('/profileDetails',Authentication , profileDetails);
 router.get('/viewTransactionHistory', Authentication , viewTransactionHistory);
-
 
 // Order Routes
 
@@ -56,13 +53,16 @@ router.post('/updateTicketStatus/:ticketId', Authentication, checkRole( 'admin',
 router.get('/viewUserList', Authentication , checkRole('admin') , viewUserList);
 router.get('/viewOrderList', Authentication , checkRole('admin') , viewOrderList);
 
+// Admin Refill Routes
 
+router.post('/requestRefill', Authentication, checkRole( 'admin', 'agent'), requestRefill);
+router.post('/requestMultipleRefills', Authentication, checkRole( 'admin', 'agent'), requestMultipleRefills);
+router.get('/checkRefillStatus/:refillId', Authentication, checkRole( 'admin', 'agent'), checkRefillStatus);
+router.post('/checkMultipleRefillStatuses', Authentication, checkRole( 'admin', 'agent'), checkMultipleRefillStatuses);
 
 //Payment Routes
 
 // router.post('/initiatePayment', Authentication, initiatePayment);
 // router.post('/verifyPayment', Authentication, verifyPayment);
-
-
 
 export default router;
