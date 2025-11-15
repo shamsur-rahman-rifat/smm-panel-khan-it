@@ -4,8 +4,7 @@ import { getServicesFromAPI, placeNewOrder, placeMassOrder, getUserOrders, getOr
 import { createTicket, getMyTickets, getAllTickets, replyToTicket, updateTicketStatus } from '../controller/ticketController.js';
 import { requestRefill, requestMultipleRefills, checkRefillStatus, checkMultipleRefillStatuses} from '../controller/refillController.js';
 import { getDashboardData } from '../controller/dashboardController.js'
-
-// import { initiatePayment, verifyPayment } from '../controller/paymentController.js';
+import { initiatePayment, verifyPayment } from '../controller/paymentController.js';
 
 import Authentication from '../middleware/auth.js'
 import checkRole from '../middleware/checkRole.js'
@@ -62,7 +61,7 @@ router.post('/checkMultipleRefillStatuses', Authentication, checkRole( 'admin', 
 
 //Payment Routes
 
-// router.post('/initiatePayment', Authentication, initiatePayment);
-// router.post('/verifyPayment', Authentication, verifyPayment);
+router.post('/initiatePayment', Authentication, initiatePayment);
+router.get('/verifyPayment', verifyPayment);
 
 export default router;

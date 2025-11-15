@@ -1,94 +1,145 @@
-import UserModel from '../model/User.js';
-import axios from 'axios';
+import User from "../model/User.js";
+import Transaction from "../model/Transaction.js";
+import axios from "axios";
 
-// Get your SSLCOMMERZ API credentials from environment variables
-const storeID = process.env.SSL_STORE_ID;
-const storePassword = process.env.SSL_STORE_PASSWORD;
-const sslCommerzUrl = 'https://sandbox.sslcommerz.com/gwprocess/v4/orderlink'; // Use production URL for live transactions
+const NAGORIK_API_KEY = process.env.NAGORIKPAY_API_KEY;
+const NAGORIK_CREATE_URL = "https://secure-pay.nagorikpay.com/api/payment/create";
+const NAGORIK_VERIFY_URL = "https://secure-pay.nagorikpay.com/api/payment/verify";
 
-// Payment Initiation Endpoint
+// SUCCESS page on your frontend  
+const SUCCESS_URL = "https://yourwebsite.com/payment-success";
+// CANCEL page  
+const CANCEL_URL = "https://yourwebsite.com/payment-cancel";
+// WEBHOOK (optional) → You can create this later  
+const WEBHOOK_URL = "https://yourwebsite.com/api/payment/webhook";
+
+
+/* ---------------------------------------------
+   1️⃣  Initiate Payment — Returns payment_url
+--------------------------------------------- */
 export const initiatePayment = async (req, res) => {
   try {
-    const { amount, email } = req.body; // Amount to add to user's credits and user's email
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ status: 'Failed', message: 'User not found' });
+    const { amount } = req.body;
+    const email = req.headers["email"];
+
+    if (!amount || amount < 10) {
+      return res.status(400).json({ status: "Failed", message: "Minimum amount is 10 BDT" });
     }
 
-    // Prepare the data to be sent to SSLCOMMERZ API
-    const paymentData = {
-      store_id: storeID,
-      store_passwd: storePassword,
-      total_amount: amount,
-      currency: 'BDT', // Choose the currency. 
-      tran_id: `TXN${Date.now()}`, // Unique Transaction ID
-      success_url: 'https://yourwebsite.com/payment-success', // Define the success URL
-      fail_url: 'https://yourwebsite.com/payment-fail', // Define the fail URL
-      cancel_url: 'https://yourwebsite.com/payment-cancel', // Define the cancel URL
-      product_name: 'Credit Purchase',
-      product_category: 'Credits',
-      user_email: email,
-      // You can add more custom data here if needed
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: "Failed", message: "User not found" });
+    }
+
+    // Payload for NagorikPay
+    const data = {
+      cus_name: user.name || "Customer",
+      cus_email: email,
+      amount: String(amount),
+      success_url: SUCCESS_URL,
+      cancel_url: CANCEL_URL,
+      webhook_url: WEBHOOK_URL,
+      metadata: {
+        userId: user._id.toString(),
+        email
+      }
     };
 
-    // Send the payment data to SSLCOMMERZ to generate an order link
-    const response = await axios.post(sslCommerzUrl, paymentData, {
-      headers: { 'Content-Type': 'application/json' }
+    const response = await axios.post(NAGORIK_CREATE_URL, data, {
+      headers: {
+        "API-KEY": NAGORIK_API_KEY,
+        "Content-Type": "application/json",
+      },
     });
 
-    if (response.data && response.data.status === 'SUCCESS') {
-      // Redirect the user to the SSLCOMMERZ payment page
-      res.json({
-        status: 'Success',
-        payment_url: response.data.payment_url
+    if (!response.data.status) {
+      return res.status(400).json({
+        status: "Failed",
+        message: response.data.message || "Payment initiation failed",
       });
-    } else {
-      return res.status(400).json({ status: 'Failed', message: 'Failed to initiate payment' });
     }
+
+    res.json({
+      status: "Success",
+      payment_url: response.data.payment_url,
+    });
+
   } catch (error) {
-    res.status(500).json({ status: 'Failed', message: error.message });
+    res.status(500).json({ status: "Failed", message: error.message });
   }
 };
 
-// Payment verification callback from SSLCOMMERZ (after success/failure)
+
+
+/* ------------------------------------------------
+   2️⃣  Verify Payment (User redirected here)
+   NagorikPay redirects to:
+   success_url?transactionId=xxx&status=success
+------------------------------------------------- */
 export const verifyPayment = async (req, res) => {
   try {
-    const { tran_id, val_id, status } = req.body;
+    const { transactionId } = req.query; // NagorikPay returns this
 
-    if (status === 'VALID') {
-      // Get transaction details from SSLCOMMERZ API
-      const verificationData = {
-        store_id: storeID,
-        store_passwd: storePassword,
-        tran_id,
-      };
-
-      const verifyUrl = 'https://sandbox.sslcommerz.com/gwprocess/v4/verificationquery';
-      const verificationResponse = await axios.post(verifyUrl, verificationData);
-
-      if (verificationResponse.data && verificationResponse.data.status === 'SUCCESS') {
-        // Add credits to the user’s account
-        const { email, amount } = verificationResponse.data;
-
-        const user = await UserModel.findOne({ email });
-        if (user) {
-          user.credits += amount; // Add credits (amount can be fetched from SSLCOMMERZ response)
-          await user.save();
-          
-          res.json({
-            status: 'Success',
-            message: 'Payment verified and credits added successfully',
-          });
-        } else {
-          res.status(404).json({ status: 'Failed', message: 'User not found' });
-        }
-      } else {
-        res.status(400).json({ status: 'Failed', message: 'Payment verification failed' });
-      }
-    } else {
-      res.status(400).json({ status: 'Failed', message: 'Payment not valid' });
+    if (!transactionId) {
+      return res.status(400).json({ status: "Failed", message: "Missing transactionId" });
     }
+
+    // Verify with NagorikPay
+    const verifyResponse = await axios.post(
+      NAGORIK_VERIFY_URL,
+      { transaction_id: transactionId },
+      {
+        headers: {
+          "API-KEY": NAGORIK_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = verifyResponse.data;
+
+    if (!data || data.status !== "COMPLETED") {
+      return res.status(400).json({
+        status: "Failed",
+        message: "Payment not completed yet",
+        data,
+      });
+    }
+
+    // Extract payment details
+    const email = data.cus_email;
+    const amount = parseFloat(data.amount);
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: "Failed", message: "User not found" });
+    }
+
+    const balanceBefore = user.balance;
+    user.balance += amount;
+    await user.save();
+
+    // Create transaction record
+    const transaction = new Transaction({
+      email,
+      type: "deposit",
+      amount,
+      balanceBefore,
+      balanceAfter: user.balance,
+      transactionId,
+      description: "Wallet Refill"
+    });
+
+    await transaction.save();
+
+    res.json({
+      status: "Success",
+      message: "Payment verified successfully",
+      newBalance: user.balance,
+      transactionId
+    });
+
   } catch (error) {
-    res.status(500).json({ status: 'Failed', message: error.message });
+    res.status(500).json({ status: "Failed", message: error.message });
   }
 };
