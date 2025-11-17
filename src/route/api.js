@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { registration, login, profileUpdate, profileDelete, profileDetails, viewTransactionHistory, verifyEmail, verifyOTP, passwordReset,viewUserList } from '../controller/userController.js'
 import { getServicesFromAPI, placeNewOrder, placeMassOrder, getUserOrders, getOrderDetails, cancelOrders,viewOrderList } from '../controller/orderController.js'
 import { createTicket, getMyTickets, getAllTickets, replyToTicket, updateTicketStatus } from '../controller/ticketController.js';
-import { requestRefill, requestMultipleRefills, checkRefillStatus, checkMultipleRefillStatuses} from '../controller/refillController.js';
+import { requestRefill, requestMultipleRefills, checkRefillStatus, checkMultipleRefillStatuses, getAllRefillsWithStatus } from '../controller/refillController.js';
 import { getDashboardData } from '../controller/dashboardController.js'
 import { initiatePayment, verifyPayment } from '../controller/paymentController.js';
 
@@ -55,6 +55,7 @@ router.get('/viewOrderList', Authentication , checkRole('admin') , viewOrderList
 // Admin Refill Routes
 
 router.post('/requestRefill', Authentication, checkRole( 'admin', 'agent'), requestRefill);
+router.get('/getAllRefillsWithStatus', Authentication, checkRole( 'admin', 'agent'), getAllRefillsWithStatus);
 router.post('/requestMultipleRefills', Authentication, checkRole( 'admin', 'agent'), requestMultipleRefills);
 router.get('/checkRefillStatus/:refillId', Authentication, checkRole( 'admin', 'agent'), checkRefillStatus);
 router.post('/checkMultipleRefillStatuses', Authentication, checkRole( 'admin', 'agent'), checkMultipleRefillStatuses);

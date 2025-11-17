@@ -176,3 +176,44 @@ export async function checkMultipleRefillStatuses(req, res) {
     res.status(500).json({ message: "Failed to check refill statuses", error: error.message });
   }
 }
+
+// 5️⃣ Get All Refill Data with Status (checked by API service)
+export async function getAllRefillsWithStatus(req, res) {
+  try {
+    // Fetch all refills from the database
+    const refills = await Refill.find();
+
+    if (!refills || refills.length === 0) {
+      return res.status(404).json({ message: "No refills found" });
+    }
+
+    const updatedRefills = [];
+
+    // Loop through each refill to check status from the API
+    for (let refill of refills) {
+      const apiResponse = await apiService.getRefillStatus(refill.refillId);
+
+      // Update status in the database if there's a valid response
+      if (apiResponse.status) {
+        refill.status = apiResponse.status;
+        await refill.save();  // Save the updated status
+      }
+
+      updatedRefills.push({
+        refillId: refill.refillId,
+        orderId: refill.orderId,
+        apiOrderId: refill.apiOrderId,
+        status: refill.status
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Refill data with status",
+      refills: updatedRefills
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get refill data with status", error: error.message });
+  }
+}
