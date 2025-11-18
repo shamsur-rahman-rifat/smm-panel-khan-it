@@ -50,7 +50,7 @@ router.delete('/profileDelete/:id',Authentication , checkRole('admin') , profile
 router.get('/getAllTickets', Authentication, checkRole( 'admin', 'agent'), getAllTickets);
 router.post('/updateTicketStatus/:ticketId', Authentication, checkRole( 'admin', 'agent'), updateTicketStatus);
 router.get('/viewUserList', Authentication , checkRole('admin') , viewUserList);
-router.get('/viewOrderList', Authentication , checkRole('admin') , viewOrderList);
+router.get('/viewOrderList', Authentication , checkRole( 'admin', 'agent') , viewOrderList);
 
 // Admin Refill Routes
 
