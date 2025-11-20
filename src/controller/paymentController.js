@@ -133,8 +133,7 @@ export const verifyPayment = async (req, res) => {
     res.json({
       status: "Success",
       message: "Payment verified successfully",
-      newBalance: user.balance,
-      transactionId
+      newBalance: user.balance
     });
 
   } catch (error) {
