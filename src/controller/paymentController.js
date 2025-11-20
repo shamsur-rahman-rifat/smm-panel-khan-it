@@ -7,11 +7,9 @@ const NAGORIK_CREATE_URL = "https://secure-pay.nagorikpay.com/api/payment/create
 const NAGORIK_VERIFY_URL = "https://secure-pay.nagorikpay.com/api/payment/verify";
 
 // SUCCESS page on your frontend  
-const SUCCESS_URL = "https://yourwebsite.com/payment-success";
+const SUCCESS_URL = "https://smm-panel-pi.vercel.app/payment-success";
 // CANCEL page  
-const CANCEL_URL = "https://yourwebsite.com/payment-cancel";
-// WEBHOOK (optional) → You can create this later  
-const WEBHOOK_URL = "https://yourwebsite.com/api/payment/webhook";
+const CANCEL_URL = "https://smm-panel-pi.vercel.app/payment-cancel";
 
 
 /* ---------------------------------------------
@@ -38,7 +36,6 @@ export const initiatePayment = async (req, res) => {
       amount: String(amount),
       success_url: SUCCESS_URL,
       cancel_url: CANCEL_URL,
-      webhook_url: WEBHOOK_URL,
       metadata: {
         userId: user._id.toString(),
         email
