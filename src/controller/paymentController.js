@@ -113,7 +113,7 @@ export const verifyPayment = async (req, res) => {
     }
 
     const balanceBefore = user.balance;
-    user.balance += amount;
+    user.balance += amount/125;
     await user.save();
 
     // Create transaction record
