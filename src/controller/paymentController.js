@@ -6,10 +6,10 @@ const NAGORIK_API_KEY = process.env.NAGORIKPAY_API_KEY;
 const NAGORIK_CREATE_URL = "https://secure-pay.nagorikpay.com/api/payment/create";
 const NAGORIK_VERIFY_URL = "https://secure-pay.nagorikpay.com/api/payment/verify";
 
-// SUCCESS page on your frontend  
-const SUCCESS_URL = "https://smm-panel-pi.vercel.app/payment-success";
+// SUCCESS page
+const SUCCESS_URL = "https://smm-panel-pi.vercel.app/payment/success";
 // CANCEL page  
-const CANCEL_URL = "https://smm-panel-pi.vercel.app/payment-cancel";
+const CANCEL_URL = "https://smm-panel-pi.vercel.app/payment/faild";
 
 
 /* ---------------------------------------------
