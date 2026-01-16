@@ -25,9 +25,12 @@ app.use(limiter);
 // MongoDB connection
 
 let URL= process.env.MONGO_URL;
-connect(URL)
-  .then(() => console.log("Database Connected"))
-  .catch(err => console.log(err));
+let Option={user:'',pass:'',autoIndex:true}
+connect(URL,Option).then(()=>{
+    console.log("Database Connected")
+}).catch((err)=>{
+    console.log(err)
+})
 
 // API routes
 
