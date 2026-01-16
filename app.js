@@ -6,12 +6,11 @@ import helmet from 'helmet';
 import cors from 'cors';
 import hpp from 'hpp';
 import { connect } from 'mongoose';
-import { resolve } from 'path';
 import dotenv from 'dotenv';
 
 dotenv.config();
 const app=new express();
-const __dirname = resolve();
+app.set('trust proxy', 1);
 
 // Middleware
 
@@ -26,12 +25,9 @@ app.use(limiter);
 // MongoDB connection
 
 let URL= process.env.MONGO_URL;
-let Option={user:'',pass:'',autoIndex:true}
-connect(URL,Option).then(()=>{
-    console.log("Database Connected")
-}).catch((err)=>{
-    console.log(err)
-})
+connect(URL)
+  .then(() => console.log("Database Connected"))
+  .catch(err => console.log(err));
 
 // API routes
 
